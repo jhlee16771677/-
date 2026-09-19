@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>중학교 과학2 - 배설계 탐구 활동 시뮬레이션</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -89,7 +90,6 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full relative">
 
-    <!-- 1번 탭: 배설과정 모식도 -->
     <section id="tab2-content" class="tab-pane block">
       <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4">
         <div class="xl:flex-1 xl:pr-4">
@@ -133,27 +133,27 @@
           </div>
         </div>
 
-        <div class="w-full overflow-x-auto rounded-xl border border-slate-200 shadow-inner bg-[#fdfdfd] touch-pan-x">
-            <div class="min-w-[1000px] aspect-[1000/480] relative">
+        <div class="w-full flex justify-center rounded-xl border border-slate-200 shadow-inner bg-[#fdfdfd] overflow-hidden">
+            <div class="w-full max-w-[900px] aspect-[1000/480] relative">
               <canvas id="simCanvas" class="w-full h-full block"></canvas>
             </div>
         </div>
 
-        <div class="mt-4 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xl sm:text-2xl font-bold text-slate-600 bg-slate-100 py-4 px-3 rounded-xl border border-slate-200 shadow-inner-soft">
-          <span class="flex items-center gap-2 sm:gap-3"><span class="p-rbc scale-150"></span>적혈구</span>
-          <span class="flex items-center gap-2 sm:gap-3"><span class="p-prot scale-150"></span>단백질</span>
-          <span class="flex items-center gap-2 sm:gap-3"><span class="p-gluc scale-150"></span>포도당</span>
-          <span class="flex items-center gap-2 sm:gap-3"><span class="p-urea scale-150"></span>요소</span>
-          <span class="flex items-center gap-2 sm:gap-3"><span class="p-water text-2xl">💧</span>물</span>
+        <div class="mt-3 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-lg sm:text-xl font-bold text-slate-600 bg-slate-100 py-3 px-3 rounded-xl border border-slate-200 shadow-inner-soft">
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-rbc scale-125"></span>적혈구</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-prot scale-125"></span>단백질</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-gluc scale-125"></span>포도당</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-urea scale-125"></span>요소</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-water text-xl">💧</span>물</span>
         </div>
 
-        <div class="mt-4 bg-teal-50/40 rounded-xl border border-teal-100 p-4 sm:p-5">
-          <div class="flex flex-wrap justify-center gap-3 mb-3">
-            <button onclick="showExplanation('여과')" id="btn-exp-여과" class="px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">여과 돋보기 🔍</button>
-            <button onclick="showExplanation('재흡수')" id="btn-exp-재흡수" class="px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">재흡수 돋보기 🔍</button>
-            <button onclick="showExplanation('분비')" id="btn-exp-분비" class="px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">분비 돋보기 🔍</button>
+        <div class="mt-3 bg-teal-50/40 rounded-xl border border-teal-100 p-3 sm:p-4">
+          <div class="flex flex-wrap justify-center gap-2 mb-2">
+            <button onclick="showExplanation('여과')" id="btn-exp-여과" class="px-4 py-1.5 rounded-lg text-sm sm:text-base font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">여과 돋보기 🔍</button>
+            <button onclick="showExplanation('재흡수')" id="btn-exp-재흡수" class="px-4 py-1.5 rounded-lg text-sm sm:text-base font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">재흡수 돋보기 🔍</button>
+            <button onclick="showExplanation('분비')" id="btn-exp-분비" class="px-4 py-1.5 rounded-lg text-sm sm:text-base font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">분비 돋보기 🔍</button>
           </div>
-          <div id="explanation-text" class="text-center text-slate-700 bg-white p-4 rounded-lg border border-slate-200 shadow-sm font-medium min-h-[4rem] flex items-center justify-center text-[15px] sm:text-[17px]">
+          <div id="explanation-text" class="text-center text-slate-700 bg-white p-3 rounded-lg border border-slate-200 shadow-sm font-medium min-h-[3rem] flex items-center justify-center text-[14px] sm:text-[15px]">
             궁금한 과정을 눌러 아주 간단한 설명을 확인해 보세요!
           </div>
         </div>
@@ -261,7 +261,7 @@
             </div>
 
             <div id="lab-result-desc" class="text-[16px] text-slate-600 font-medium bg-teal-50 border border-teal-200 p-3 rounded-xl">
-              👆 검사지를 드래그하여 소변 컵에 담그거나, 아래 버튼을 눌러 반응을 확인하세요!
+              👆 검사지를 꾹 누른 뒤 드래그하여 컵에 담그거나, 아래 버튼을 눌러 반응을 확인하세요!
             </div>
           </div>
         </div>
@@ -295,67 +295,67 @@
         <p class="text-base sm:text-lg text-slate-500 mt-2">모둠 토의를 마친 후 반 친구들 앞에서 환자의 배설계 이상 원인을 시각적으로 증명해보세요.<br>하단의 컨트롤러를 조작하여 환자의 콩팥 내부에서 일어나는 비정상적인 물질 이동을 똑같이 재현할 수 있습니다.</p>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4 sm:p-5 mb-5">
-        <div class="w-full overflow-x-auto rounded-xl border border-slate-200 shadow-inner bg-[#fdfdfd] touch-pan-x">
-            <div class="min-w-[1000px] aspect-[1000/480] relative">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-3 sm:p-4 mb-4">
+        <div class="w-full flex justify-center rounded-xl border border-slate-200 shadow-inner bg-[#fdfdfd] overflow-hidden">
+            <div class="w-full max-w-[900px] aspect-[1000/480] relative">
               <canvas id="simCanvas4" class="w-full h-full block"></canvas>
             </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-5">
-        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span>🎛️</span> 혈액 속 물질 이동 컨트롤러 (환자 상태 재현)</h3>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4">
+        <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2"><span>🎛️</span> 혈액 속 물질 이동 컨트롤러 (환자 상태 재현)</h3>
         
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
-            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-rbc scale-90"></span>적혈구</div>
-            <div class="space-y-1.5">
-              <button id="ctrl-rbc-filter" onclick="toggleCustomRule('rbc', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">여과 (X)</button>
-              <button id="ctrl-rbc-reabsorb" onclick="toggleCustomRule('rbc', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
-              <button id="ctrl-rbc-secrete" onclick="toggleCustomRule('rbc', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1 mb-1.5 font-bold text-slate-700 text-[14px]"><span class="p-rbc scale-75"></span>적혈구</div>
+            <div class="space-y-1">
+              <button id="ctrl-rbc-filter" onclick="toggleCustomRule('rbc', 'filter')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">여과 (X)</button>
+              <button id="ctrl-rbc-reabsorb" onclick="toggleCustomRule('rbc', 'reabsorb')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
+              <button id="ctrl-rbc-secrete" onclick="toggleCustomRule('rbc', 'secrete')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
             </div>
           </div>
 
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
-            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-prot scale-90"></span>단백질</div>
-            <div class="space-y-1.5">
-              <button id="ctrl-prot-filter" onclick="toggleCustomRule('prot', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">여과 (X)</button>
-              <button id="ctrl-prot-reabsorb" onclick="toggleCustomRule('prot', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
-              <button id="ctrl-prot-secrete" onclick="toggleCustomRule('prot', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1 mb-1.5 font-bold text-slate-700 text-[14px]"><span class="p-prot scale-75"></span>단백질</div>
+            <div class="space-y-1">
+              <button id="ctrl-prot-filter" onclick="toggleCustomRule('prot', 'filter')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">여과 (X)</button>
+              <button id="ctrl-prot-reabsorb" onclick="toggleCustomRule('prot', 'reabsorb')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
+              <button id="ctrl-prot-secrete" onclick="toggleCustomRule('prot', 'secrete')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
             </div>
           </div>
 
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
-            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-gluc scale-90"></span>포도당</div>
-            <div class="space-y-1.5">
-              <button id="ctrl-gluc-filter" onclick="toggleCustomRule('gluc', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
-              <button id="ctrl-gluc-reabsorb" onclick="toggleCustomRule('gluc', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">재흡수 (O)</button>
-              <button id="ctrl-gluc-secrete" onclick="toggleCustomRule('gluc', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1 mb-1.5 font-bold text-slate-700 text-[14px]"><span class="p-gluc scale-75"></span>포도당</div>
+            <div class="space-y-1">
+              <button id="ctrl-gluc-filter" onclick="toggleCustomRule('gluc', 'filter')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
+              <button id="ctrl-gluc-reabsorb" onclick="toggleCustomRule('gluc', 'reabsorb')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">재흡수 (O)</button>
+              <button id="ctrl-gluc-secrete" onclick="toggleCustomRule('gluc', 'secrete')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
             </div>
           </div>
 
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
-            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-urea scale-90"></span>요소</div>
-            <div class="space-y-1.5">
-              <button id="ctrl-urea-filter" onclick="toggleCustomRule('urea', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
-              <button id="ctrl-urea-reabsorb" onclick="toggleCustomRule('urea', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
-              <button id="ctrl-urea-secrete" onclick="toggleCustomRule('urea', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">분비 (O)</button>
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1 mb-1.5 font-bold text-slate-700 text-[14px]"><span class="p-urea scale-75"></span>요소</div>
+            <div class="space-y-1">
+              <button id="ctrl-urea-filter" onclick="toggleCustomRule('urea', 'filter')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
+              <button id="ctrl-urea-reabsorb" onclick="toggleCustomRule('urea', 'reabsorb')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
+              <button id="ctrl-urea-secrete" onclick="toggleCustomRule('urea', 'secrete')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">분비 (O)</button>
             </div>
           </div>
 
-          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
-            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-water text-[12px]">💧</span>물</div>
-            <div class="space-y-1.5">
-              <button id="ctrl-water-filter" onclick="toggleCustomRule('water', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
-              <button id="ctrl-water-reabsorb" onclick="toggleCustomRule('water', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">재흡수 (O)</button>
-              <button id="ctrl-water-secrete" onclick="toggleCustomRule('water', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1 mb-1.5 font-bold text-slate-700 text-[14px]"><span class="p-water text-[12px]">💧</span>물</div>
+            <div class="space-y-1">
+              <button id="ctrl-water-filter" onclick="toggleCustomRule('water', 'filter')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
+              <button id="ctrl-water-reabsorb" onclick="toggleCustomRule('water', 'reabsorb')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">재흡수 (O)</button>
+              <button id="ctrl-water-secrete" onclick="toggleCustomRule('water', 'secrete')" class="w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
             </div>
           </div>
 
         </div>
 
-        <div class="mt-5 flex justify-center">
-          <button onclick="resetCustomRules()" class="px-6 py-2 bg-slate-700 text-white font-bold rounded-lg shadow hover:bg-slate-800 transition-colors flex items-center gap-2"><span>🔄</span> 정상 상태로 초기화</button>
+        <div class="mt-4 flex justify-center">
+          <button onclick="resetCustomRules()" class="px-5 py-1.5 bg-slate-700 text-white font-bold rounded-lg shadow hover:bg-slate-800 transition-colors flex items-center gap-2 text-sm"><span>🔄</span> 정상 상태로 초기화</button>
         </div>
       </div>
     </section>
@@ -384,11 +384,72 @@
     </div>
   </div>
 
+  <div id="stage2-password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center transform scale-90 transition-transform duration-300" id="stage2-password-modal-content">
+      <div class="text-5xl mb-4">🔐</div>
+      <h3 class="text-xl font-black text-slate-800 mb-2">모둠 활동 잠금</h3>
+      <p class="text-slate-600 mb-6 font-medium text-[15px]">선생님이 알려주신<br>입장 암호를 입력하세요.</p>
+      <input type="password" id="stage2-password" onkeypress="if(event.key==='Enter') checkStage2Password()" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 mb-4 text-center text-xl tracking-widest focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all" placeholder="암호 입력">
+      <div class="flex gap-3">
+        <button onclick="closeStage2PasswordModal()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all">취소</button>
+        <button onclick="checkStage2Password()" class="w-1/2 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition-all">확인</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-50 bg-slate-900/90 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
     <span id="toast-icon" class="text-lg">💡</span><span id="toast-msg" class="text-sm font-medium">메시지</span>
   </div>
 
   <script>
+    let synth;
+    let dipSynth;
+    function initAudio() {
+      if (!synth) {
+        synth = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.5 }
+        }).toDestination();
+        synth.volume.value = -5;
+      }
+      if (!dipSynth) {
+        dipSynth = new Tone.MembraneSynth({
+          pitchDecay: 0.05,
+          octaves: 4,
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 }
+        }).toDestination();
+        dipSynth.volume.value = -2;
+      }
+      if (Tone.context.state !== 'running') Tone.start();
+    }
+
+    function playDragSound() {
+      initAudio();
+      dipSynth.triggerAttackRelease("G3", "32n");
+    }
+
+    function playDipSound() {
+      initAudio();
+      dipSynth.triggerAttackRelease("E4", "16n");
+    }
+
+    function playSuccessSound() {
+      initAudio();
+      const now = Tone.now();
+      synth.triggerAttackRelease("C5", "8n", now);
+      synth.triggerAttackRelease("E5", "8n", now + 0.15);
+      synth.triggerAttackRelease("G5", "8n", now + 0.3);
+      synth.triggerAttackRelease("C6", "4n", now + 0.45);
+    }
+
+    function playFailSound() {
+      initAudio();
+      const now = Tone.now();
+      synth.triggerAttackRelease("G4", "8n", now);
+      synth.triggerAttackRelease("C4", "4n", now + 0.15);
+    }
+
     function showToast(msg, icon = '💡') {
       const toast = document.getElementById('toast');
       document.getElementById('toast-msg').innerText = msg;
@@ -398,8 +459,29 @@
       window.toastTimer = setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
     }
 
-    const CLINIC_PASSWORD = "1234"; 
+    function showModal() {
+      const modal = document.getElementById('completion-modal');
+      const content = document.getElementById('completion-modal-content');
+      modal.classList.remove('hidden');
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-90');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('completion-modal');
+      const content = document.getElementById('completion-modal-content');
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-90');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    const CLINIC_PASSWORD = "0203"; 
     let isGradingUnlocked = false; 
+
+    const STAGE2_PASSWORD = "2222";
+    let isStage2Unlocked = false;
+    let pendingTab = null;
 
     function showPasswordModal() {
       const modal = document.getElementById('password-modal');
@@ -432,9 +514,46 @@
       }
     }
 
+    function showStage2PasswordModal(tabId) {
+      pendingTab = tabId;
+      const modal = document.getElementById('stage2-password-modal');
+      const content = document.getElementById('stage2-password-modal-content');
+      document.getElementById('stage2-password').value = '';
+      modal.classList.remove('hidden');
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-90');
+      setTimeout(() => document.getElementById('stage2-password').focus(), 100);
+    }
+
+    function closeStage2PasswordModal() {
+      const modal = document.getElementById('stage2-password-modal');
+      const content = document.getElementById('stage2-password-modal-content');
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-90');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function checkStage2Password() {
+      const input = document.getElementById('stage2-password').value;
+      if (input === STAGE2_PASSWORD) {
+        isStage2Unlocked = true;
+        closeStage2PasswordModal();
+        showToast('모둠 활동이 열렸습니다!', '🔓');
+        setTimeout(() => switchTab(pendingTab), 300);
+      } else {
+        showToast('입장 암호가 일치하지 않습니다.', '❌');
+      }
+    }
+
     let currentTab = 'tab2'; 
 
     function switchTab(tabId) {
+      if ((tabId === 'tab3' || tabId === 'tab4') && !isStage2Unlocked) {
+        showStage2PasswordModal(tabId);
+        return;
+      }
+
       currentTab = tabId;
       ['tab2', 'tab3', 'tab4'].forEach(id => {
         const pane = document.getElementById(`${id}-content`);
@@ -451,7 +570,6 @@
       if (tabId === 'tab2' || tabId === 'tab4') {
         if (!simCtx || !simCtx4) initSim(); 
         particles = []; 
-        // 뭉쳐서 나오지 않고 화면 밖에서부터 순차적으로 등장하도록 tOffset 적용
         for(let i=0; i<40; i++) spawnParticle(-(i * 0.4) - Math.random() * 0.2);
         if(!simLoopId) renderSim();
       }
@@ -459,7 +577,6 @@
       if (tabId === 'tab4') updateControllerUI();
     }
 
-    /* --- Simulation Setup --- */
     let simCanvas, simCtx, simCanvas4, simCtx4, simLoopId, isPlaying = true, simSpeed = 1.0, showLabel = true, currentFlt = 'all', particles = [];
 
     const defaultRules = {
@@ -507,11 +624,11 @@
             btn.innerText = `${labelText} (${isOn ? 'O' : 'X'})`;
             
             if(isChanged) {
-              btn.className = "w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-rose-500 text-white shadow-md border-2 border-rose-600 animate-pulse";
+              btn.className = "w-full py-1 rounded-lg font-bold text-sm transition-colors bg-rose-500 text-white shadow-md border-2 border-rose-600 animate-pulse";
             } else if(isOn) {
-              btn.className = "w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm border-2 border-transparent";
+              btn.className = "w-full py-1 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm border-2 border-transparent";
             } else {
-              btn.className = "w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500 border-2 border-transparent";
+              btn.className = "w-full py-1 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500 border-2 border-transparent";
             }
           }
         });
@@ -560,7 +677,6 @@
       particles.push(p);
     }
 
-    /* --- Drawing Functions (Anatomy & Particles) --- */
     function drawPolygonArrow(ctx, fx, fy, tx, ty, color) {
       const a = Math.atan2(ty-fy, tx-fx);
       const len = Math.hypot(tx-fx, ty-fy);
@@ -724,7 +840,7 @@
         let v = p.baseSpeed * simSpeed;
         
         if(!isPlaying) v = 0;
-        if(isTab4) v *= 0.85; // 3번 탭에서만 속도를 아주 조금 더 느리게 조절
+        if(isTab4) v *= 0.85; 
 
         let rules = isTab4 ? customRules[p.type] : defaultRules[p.type];
 
@@ -741,8 +857,6 @@
             let willFilter = rules.filter;
             if (willFilter) {
                 if (p.type === 'urea') willFilter = Math.random() < 0.7;
-                /* 물은 토리에서 모두 여과되도록 이전의 잘못된 확률 코드를 제거했습니다. 
-                   (이후 세뇨관에서 85%는 재흡수되고 나머지는 오줌으로 배출됩니다.) */
             }
             p.route = willFilter ? 'tubule_v' : 'efferent_curve';
           }
@@ -780,17 +894,12 @@
 
           if(!p.reabsorbed && p.t > 0.3 && p.t < 0.35) { 
             let doReab = rules.reabsorb;
-            
-            // 재흡수(O) 상태일 때: 물방울이 오줌으로 직진하는 빈도를 살짝 높임 (약 75% 재흡수, 25% 오줌으로)
-            if(doReab && p.type === 'water') {
-                doReab = Math.random() < 0.75; 
-            }
+            if(doReab && p.type === 'water') doReab = Math.random() < 0.75; 
             
             if(doReab) { 
                p.reabsorbed = true; p.route = 'reab_up'; 
                p.t = 0; p.sX = px; p.sY = py; 
             } else {
-               // 오류 수정: 재흡수되지 않기로 결정되면, 다음 프레임에서 또 계산하지 않도록 'skipped' 처리
                p.reabsorbed = 'skipped';
             }
           }
@@ -802,12 +911,13 @@
 
           if(!p.secreted && p.t > 0.65 && p.t < 0.70) {
             let doSec = rules.secrete;
-            if (doSec && p.type === 'urea') doSec = Math.random() < 0.95;
+            // 요소가 여과되지 않고 넘어왔다면 100% 분비되도록 확률 제거
+            if (doSec && p.type === 'urea') doSec = true; 
+            
             if (doSec) {
                 p.secreted = true; p.route = 'sec_down';
                 p.t = 0; p.sX = px; p.sY = py; 
             } else {
-                // 오류 수정: 분비되지 않기로 결정되면, 다음 프레임에서 또 계산하지 않도록 'skipped' 처리
                 p.secreted = 'skipped';
             }
           }
@@ -842,7 +952,6 @@
                     (currentFlt === 'water' && p.type==='water');
         
         ctx.globalAlpha = match ? 1.0 : 0.15;
-        // p.t가 음수일 때는 화면 왼쪽 바깥에서부터 천천히 진입하도록 처리됨
         if(px > 0 && py > 0) drawP(ctx, p, px, py);
         ctx.globalAlpha = 1.0;
         
@@ -886,7 +995,6 @@
       simLoopId = requestAnimationFrame(renderSim);
     }
 
-    // --- 2번 탭 (소변검사지 활동 진료실) 로직 ---
     let selectedUrinaryPatient = 1;
     let patientRecords = {
       1: { status: 'pending', answers: { sub: null, cause: null, trt: null } },
@@ -973,7 +1081,7 @@
       if (rec.status === 'pending') {
         document.getElementById('pad-glucose').className = "w-6 h-5 bg-sky-300 border border-slate-200 transition-colors duration-500";
         document.getElementById('pad-protein').className = "w-6 h-5 bg-yellow-200 border border-slate-200 transition-colors duration-500";
-        document.getElementById('lab-result-desc').innerHTML = `👆 검사지를 드래그하여 소변 컵에 담그거나, 아래 버튼을 눌러주세요.`;
+        document.getElementById('lab-result-desc').innerHTML = `👆 검사지를 꾹 누른 뒤 드래그하여 컵에 담그거나, 아래 버튼을 눌러주세요.`;
         statusBadge.innerText = "검사 대기중";
         statusBadge.className = "px-3 py-1 bg-amber-100 text-amber-700 font-bold text-[15px] rounded-lg transition-colors";
         contentArea.innerHTML = `
@@ -1101,11 +1209,12 @@
     }
 
     function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+    function drag(ev) { playDragSound(); ev.dataTransfer.setData("text", ev.target.id); }
     function drop(ev) { ev.preventDefault(); dipTestStrip(); }
 
     function dipTestStrip() {
       if(patientRecords[selectedUrinaryPatient].status !== 'pending') return; 
+      playDipSound();
       patientRecords[selectedUrinaryPatient].status = 'testing';
       showToast('반응 완료! 모둠원과 상의하여 1, 2, 3단계 답안을 기록하세요.', '🧪');
       renderDiagnosticReport();
@@ -1157,8 +1266,13 @@
       updateBadges();
       renderDiagnosticReport();
 
-      if (allCorrect) setTimeout(showModal, 600);
-      else showToast('진단이 틀린 환자가 있습니다. 오진(빨간색) 뱃지를 확인하고 다시 토의해보세요!', '❌');
+      if (allCorrect) {
+          playSuccessSound();
+          setTimeout(showModal, 600);
+      } else {
+          playFailSound();
+          showToast('진단이 틀린 환자가 있습니다. 오진(빨간색) 뱃지를 확인하고 다시 토의해보세요!', '❌');
+      }
     }
 
     function updateBadges() {
@@ -1208,9 +1322,9 @@
       btns.forEach(b => {
         const btnEl = document.getElementById(`btn-exp-${b}`);
         if(b === type) {
-          btnEl.className = "px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-amber-300 text-amber-700 transition-colors border border-amber-300 shadow-inner";
+          btnEl.className = "px-4 py-1.5 rounded-lg text-sm sm:text-base font-bold bg-amber-300 text-amber-700 transition-colors border border-amber-300 shadow-inner";
         } else {
-          btnEl.className = "px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm";
+          btnEl.className = "px-4 py-1.5 rounded-lg text-sm sm:text-base font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm";
         }
       });
     }
