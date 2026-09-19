@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>중학교 과학2 - 배설계 탐구 활동 시뮬레이션</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Noto Sans KR"', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#f0fdfa', 500: '#14b8a6', 600: '#0d9488' },
+            tubule: { border: '#0d9488', fill: '#ccfbf1' },
+            blood: { artery: '#f43f5e', vein: '#3b82f6' }
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+            'inner-soft': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.03)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; user-select: none; -webkit-tap-highlight-color: transparent; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    
+    .tab-pane { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* 슬라이더 스타일 */
+    input[type=range] { -webkit-appearance: none; background: transparent; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #0d9488; cursor: pointer; margin-top: -7px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #cbd5e1; border-radius: 2px; }
+
+    /* 시각적 파티클 아이콘 CSS (HTML 렌더링용) */
+    .p-rbc { width:16px; height:16px; border-radius:50%; background:#fca5a5; border:3px solid #ef4444; display:inline-block; box-sizing:border-box;}
+    .p-prot { width:18px; height:18px; background:#15803d; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); display:inline-block; }
+    .p-gluc { width:11px; height:11px; background:#a855f7; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); display:inline-block; }
+    .p-urea { width:9px; height:9px; background:#fde047; border:2px solid #eab308; display:inline-block; box-sizing:border-box;}
+    .p-water { font-size:11px; line-height:11px; display:inline-block; color:#38bdf8; }
+    @media (min-width: 768px) {
+      .p-rbc { width:18px; height:18px; } .p-prot { width:20px; height:20px; } .p-gluc { width:12px; height:12px; } .p-urea { width:10px; height:10px; } .p-water { font-size:12px; line-height:12px; }
+    }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 flex-shrink-0 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white shadow-md">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs sm:text-[15px] font-bold px-3 py-1 rounded-full bg-teal-100 text-teal-800">중2 과학 동물과 에너지</span>
+            </div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-800 tracking-tight mt-1 whitespace-nowrap">배설계 탐구 시뮬레이션</h1>
+          </div>
+        </div>
+        
+        <nav class="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar" aria-label="Tabs">
+          <button id="tab-btn-2" onclick="switchTab('tab2')" class="tab-btn flex-shrink-0 flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-base sm:text-lg font-bold transition-all bg-teal-600 text-white shadow-md shadow-teal-200">
+            <span>🔬 1. 배설과정 모식도</span>
+          </button>
+          <button id="tab-btn-3" onclick="switchTab('tab3')" class="tab-btn flex-shrink-0 flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-base sm:text-lg font-semibold transition-all text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 opacity-80 hover:opacity-100">
+            <span>🩺 2. 모의 진료실</span>
+          </button>
+          <button id="tab-btn-4" onclick="switchTab('tab4')" class="tab-btn flex-shrink-0 flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-base sm:text-lg font-semibold transition-all text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 opacity-80 hover:opacity-100">
+            <span>🎤 3. 의료진 브리핑</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full relative">
+
+    <!-- 1번 탭: 배설과정 모식도 -->
+    <section id="tab2-content" class="tab-pane block">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4">
+        <div class="xl:flex-1 xl:pr-4">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-800 flex items-center">정상 배설과정 모식도</h2>
+          <p class="text-lg sm:text-xl text-slate-500 mt-5 xl:whitespace-nowrap">건강한 콩팥에서 혈액이 여과, 재흡수, 분비 과정을 거쳐 오줌이 되는 흐름을 관찰하세요.</p>
+        </div>
+        
+        <div class="flex flex-wrap items-center justify-start xl:justify-end gap-2 sm:gap-3">
+          <button onclick="toggleLabels()" class="px-4 sm:px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-lg sm:text-xl font-bold shadow-sm flex items-center gap-2 flex-shrink-0"><span id="label-icon">🏷️</span><span id="label-text">과정 명칭 표시</span></button>
+          <button onclick="togglePlay()" class="px-5 sm:px-8 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-lg sm:text-xl font-bold shadow-sm flex items-center gap-2 flex-shrink-0"><span id="play-icon">⏸️</span><span id="play-text">일시정지</span></button>
+          <div class="flex items-center justify-between gap-3 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 mt-2 sm:mt-0 flex-shrink-0">
+            <span class="text-lg font-bold text-slate-600 whitespace-nowrap">속도</span>
+            <input type="range" id="speed-slider" min="0.3" max="2.2" step="0.1" value="1.0" oninput="updateSpeed(this.value)" class="w-24 sm:w-32 h-6 flex-shrink-0">
+            <span id="speed-val" class="text-base font-black text-teal-600 w-12 text-right flex-shrink-0">1.0x</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-5">
+        <button onclick="setFilter('all')" id="flt-all" class="px-5 py-2.5 rounded-full text-base sm:text-[20px] font-bold transition-all bg-slate-800 text-white shadow-md">전체 보기</button>
+        <button onclick="setFilter('rbc')" id="flt-rbc" class="px-5 py-2.5 rounded-full text-base sm:text-[20px] font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1.5"><span class="p-rbc scale-90"></span><span class="p-prot scale-90"></span>혈구·단백질</button>
+        <button onclick="setFilter('glu')" id="flt-glu" class="px-5 py-2.5 rounded-full text-base sm:text-[20px] font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1.5"><span class="p-gluc scale-90"></span>포도당</button>
+        <button onclick="setFilter('urea')" id="flt-urea" class="px-5 py-2.5 rounded-full text-base sm:text-[20px] font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1.5"><span class="p-urea scale-90"></span>요소</button>
+        <button onclick="setFilter('water')" id="flt-water" class="px-5 py-2.5 rounded-full text-base sm:text-[20px] font-bold transition-all bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm flex items-center gap-1.5"><span class="p-water text-[14px]">💧</span>물</button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4 sm:p-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+          <div class="border-2 border-rose-200 bg-rose-50 rounded-xl p-4 shadow-inner-soft">
+            <div class="text-base sm:text-2xl font-black text-rose-700 mb-3">콩팥동맥 혈액</div>
+            <div class="flex gap-2 items-center flex-wrap scale-110 origin-left"><span class="p-rbc"></span><span class="p-rbc"></span><span class="p-prot"></span><span class="p-prot"></span><span class="p-gluc"></span><span class="p-gluc"></span><span class="p-urea"></span><span class="p-urea"></span><span class="p-water text-[16px]">💧💧</span></div>
+          </div>
+          <div class="border-2 border-teal-200 bg-teal-50 rounded-xl p-4 shadow-inner-soft">
+            <div class="text-base sm:text-2xl font-black text-teal-700 mb-1">여과액</div>
+            <div class="text-xs sm:text-lg text-teal-700/80 mb-2 font-bold">크기가 큰 물질 통과 못함</div>
+            <div class="flex gap-2 items-center flex-wrap scale-110 origin-left"><span class="p-gluc"></span><span class="p-gluc"></span><span class="p-urea"></span><span class="p-urea"></span><span class="p-water text-[16px]">💧💧</span></div>
+          </div>
+          <div class="border-2 border-amber-200 bg-amber-50 rounded-xl p-4 shadow-inner-soft">
+            <div class="text-base sm:text-2xl font-black text-amber-700 mb-3">최종 오줌</div>
+            <div class="flex gap-2 items-center flex-wrap scale-110 origin-left"><span class="p-urea"></span><span class="p-urea"></span><span class="p-urea"></span><span class="p-water text-[16px]">💧💧</span></div>
+          </div>
+        </div>
+
+        <div class="w-full overflow-x-auto rounded-xl border border-slate-200 shadow-inner bg-[#fdfdfd] touch-pan-x">
+            <div class="min-w-[1000px] aspect-[1000/480] relative">
+              <canvas id="simCanvas" class="w-full h-full block"></canvas>
+            </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xl sm:text-2xl font-bold text-slate-600 bg-slate-100 py-4 px-3 rounded-xl border border-slate-200 shadow-inner-soft">
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-rbc scale-150"></span>적혈구</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-prot scale-150"></span>단백질</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-gluc scale-150"></span>포도당</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-urea scale-150"></span>요소</span>
+          <span class="flex items-center gap-2 sm:gap-3"><span class="p-water text-2xl">💧</span>물</span>
+        </div>
+
+        <div class="mt-4 bg-teal-50/40 rounded-xl border border-teal-100 p-4 sm:p-5">
+          <div class="flex flex-wrap justify-center gap-3 mb-3">
+            <button onclick="showExplanation('여과')" id="btn-exp-여과" class="px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">여과 돋보기 🔍</button>
+            <button onclick="showExplanation('재흡수')" id="btn-exp-재흡수" class="px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">재흡수 돋보기 🔍</button>
+            <button onclick="showExplanation('분비')" id="btn-exp-분비" class="px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm">분비 돋보기 🔍</button>
+          </div>
+          <div id="explanation-text" class="text-center text-slate-700 bg-white p-4 rounded-lg border border-slate-200 shadow-sm font-medium min-h-[4rem] flex items-center justify-center text-[15px] sm:text-[17px]">
+            궁금한 과정을 눌러 아주 간단한 설명을 확인해 보세요!
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="tab3-content" class="tab-pane hidden">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-5 mb-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 class="text-[30px] font-black text-slate-800 flex items-center gap-2"><span>🩺</span> 모의 진료실 : 소변 검사 활동</h2>
+          <p class="text-base text-slate-500 mt-2">환자의 소변 컵에 시험지를 쏙 넣어 색깔 변화를 관찰하고, 어떤 영양소가 섞여 나왔는지 확인하여 질병을 진단해보세요!</p>
+        </div>
+        <div class="flex items-center gap-3 bg-teal-50 px-5 py-3 rounded-xl border border-teal-200 flex-shrink-0 shadow-inner-soft">
+          <span class="text-3xl">👨‍⚕️</span>
+          <div>
+            <div class="text-xs font-bold text-teal-600 mb-0.5">나의 진단 달성도</div>
+            <div class="text-xl font-black text-teal-800"><span id="clinic-score">0</span> / 3 명 완료</div>
+          </div>
+          <button onclick="resetUrinaryLab()" class="ml-2 px-3 py-1.5 bg-white border border-teal-300 text-teal-700 hover:bg-teal-100 rounded-xl text-sm font-bold shadow-sm transition-all active:scale-95">다시 하기</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-6 space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-5 text-center">
+            <div class="text-lg font-black text-slate-400 uppercase tracking-wider mb-3">1단계: 환자 소변 샘플 선택</div>
+            <div class="grid grid-cols-3 gap-2">
+              <div id="ur-pt-1" onclick="selectUrinaryPt(1)" class="relative cursor-pointer p-3 rounded-xl border-2 border-teal-500 bg-teal-50 transition-all text-center overflow-hidden">
+                <div id="pt-badge-1" class="hidden absolute -right-6 top-1 text-white text-[10px] font-bold px-6 py-0.5 rotate-45 shadow-sm">진단완료</div>
+                <div class="font-bold text-slate-800 text-lg mt-1">환자 A</div>
+                <div class="text-sm text-slate-500 mt-0.5">소변 검사 의뢰</div>
+              </div>
+              <div id="ur-pt-2" onclick="selectUrinaryPt(2)" class="relative cursor-pointer p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-300 transition-all text-center overflow-hidden">
+                <div id="pt-badge-2" class="hidden absolute -right-6 top-1 text-white text-[10px] font-bold px-6 py-0.5 rotate-45 shadow-sm">진단완료</div>
+                <div class="font-bold text-slate-800 text-lg mt-1">환자 B</div>
+                <div class="text-sm text-slate-500 mt-0.5">소변 검사 의뢰</div>
+              </div>
+              <div id="ur-pt-3" onclick="selectUrinaryPt(3)" class="relative cursor-pointer p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-300 transition-all text-center overflow-hidden">
+                <div id="pt-badge-3" class="hidden absolute -right-6 top-1 text-white text-[10px] font-bold px-6 py-0.5 rotate-45 shadow-sm">진단완료</div>
+                <div class="font-bold text-slate-800 text-lg mt-1">환자 C</div>
+                <div class="text-sm text-slate-500 mt-0.5">정기 건강검진</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-5 text-center">
+            <div class="text-lg font-black text-slate-400 uppercase tracking-wider mb-3">2단계: 소변검사지를 컵에 넣어 반응 보기</div>
+            
+            <div class="mb-2 p-3 bg-white border border-slate-200 rounded-xl text-[16px] shadow-sm">
+              <div class="font-bold text-slate-700 mb-2">📊 소변검사지 색상 대조표</div>
+              <div class="grid grid-cols-7 gap-1 text-center items-center">
+                <div class="font-semibold text-slate-500 text-[10px] sm:text-[14px]">시험부분</div>
+                <div class="text-slate-500 text-[11px] sm:text-[14px]">음성(-)</div>
+                <div class="text-slate-500 text-[11px] sm:text-[14px]">±</div>
+                <div class="text-slate-500 text-[11px] sm:text-[14px]">+</div>
+                <div class="text-slate-500 text-[11px] sm:text-[14px]">++</div>
+                <div class="text-slate-500 text-[11px] sm:text-[14px]">+++</div>
+                <div class="text-slate-500 text-[11px] sm:text-[14px]">++++</div>
+                
+                <div class="font-bold text-slate-700 mt-1">단백질</div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-yellow-200 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-yellow-300 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-lime-400 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-green-500 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-teal-500 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-teal-700 mt-1 border border-slate-200"></div>
+                
+                <div class="font-bold text-slate-700 mt-1">포도당</div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-sky-300 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-emerald-300 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-lime-500 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-amber-600 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-yellow-800 mt-1 border border-slate-200"></div>
+                <div class="h-4 w-4 sm:h-5 sm:w-5 mx-auto rounded-sm bg-amber-900 mt-1 border border-slate-200"></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-around my-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+              <div class="flex flex-col items-center">
+                <div ondrop="drop(event)" ondragover="allowDrop(event)" class="relative w-24 h-32 bg-amber-100/60 border-4 border-slate-300 rounded-b-3xl flex flex-col justify-end overflow-hidden shadow-inner transition-colors duration-200">
+                  <div id="urine-liquid" class="w-full h-20 bg-amber-200 transition-all duration-500 flex items-center justify-center pointer-events-none">
+                    <span id="urine-label" class="text-lg font-bold text-amber-800">환자 A</span>
+                  </div>
+                </div>
+                <span class="text-[18px] font-bold text-slate-600 mt-2">소변 컵</span>
+              </div>
+
+              <div class="flex flex-col items-center space-y-3">
+                <div id="test-strip" draggable="true" ondragstart="drag(event)" class="w-8 h-40 bg-white border border-slate-300 rounded-sm shadow-md flex flex-col items-center justify-end pb-3 gap-1.5 cursor-grab active:cursor-grabbing transition-all hover:scale-105" onclick="dipTestStrip()">
+                  <div class="flex-1 w-full flex items-start justify-center pt-2 pointer-events-none">
+                     <div class="w-3 h-10 bg-slate-100 rounded-sm"></div>
+                  </div>
+                  <div class="w-6 h-5 bg-rose-100 border border-slate-200 pointer-events-none"></div>
+                  <div class="w-6 h-5 bg-indigo-100 border border-slate-200 pointer-events-none"></div>
+                  <div class="relative w-full flex justify-center pointer-events-none">
+                    <div id="pad-glucose" class="w-6 h-5 bg-sky-300 border border-slate-200 transition-colors duration-500"></div>
+                  </div>
+                  <div class="relative w-full flex justify-center pointer-events-none">
+                    <div id="pad-protein" class="w-6 h-5 bg-yellow-200 border border-slate-200 transition-colors duration-500"></div>
+                  </div>
+                </div>
+                <button onclick="dipTestStrip()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-[15px] font-bold rounded-xl shadow transition-all">검사지에 소변 묻히기 🧪</button>
+              </div>
+            </div>
+
+            <div id="lab-result-desc" class="text-[16px] text-slate-600 font-medium bg-teal-50 border border-teal-200 p-3 rounded-xl">
+              👆 검사지를 드래그하여 소변 컵에 담그거나, 아래 버튼을 눌러 반응을 확인하세요!
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6 space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-5 h-full flex flex-col">
+            <div>
+              <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div>
+                  <span class="text-[16px] font-black text-teal-700 bg-teal-100 px-2.5 py-1 rounded-full">진단 보고서</span>
+                  <h3 id="rep-pt-name" class="text-[19px] font-black text-slate-800 mt-2">환자 A 검사 보고서</h3>
+                </div>
+                <div id="rep-status-badge" class="px-3 py-1 bg-amber-100 text-amber-700 font-bold text-[15px] rounded-lg transition-colors">검사 대기중</div>
+              </div>
+              <div id="report-content-area" class="mb-2">
+                <div class="p-5 text-center text-slate-500 mt-10">
+                  <div class="text-4xl mb-3">🧪</div>
+                  왼쪽 실험실에서 소변검사지를 컵에 넣어<br>검사를 먼저 진행해주세요.
+                </div>
+              </div>
+            </div>
+            <div id="report-action-area"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab4-content" class="tab-pane hidden">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4 md:p-5 mb-5">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-800 flex items-center gap-2"><span>🎤</span> 의료진 브리핑</h2>
+        <p class="text-base sm:text-lg text-slate-500 mt-2">모둠 토의를 마친 후 반 친구들 앞에서 환자의 배설계 이상 원인을 시각적으로 증명해보세요.<br>하단의 컨트롤러를 조작하여 환자의 콩팥 내부에서 일어나는 비정상적인 물질 이동을 똑같이 재현할 수 있습니다.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-4 sm:p-5 mb-5">
+        <div class="w-full overflow-x-auto rounded-xl border border-slate-200 shadow-inner bg-[#fdfdfd] touch-pan-x">
+            <div class="min-w-[1000px] aspect-[1000/480] relative">
+              <canvas id="simCanvas4" class="w-full h-full block"></canvas>
+            </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-soft p-5">
+        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span>🎛️</span> 혈액 속 물질 이동 컨트롤러 (환자 상태 재현)</h3>
+        
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-rbc scale-90"></span>적혈구</div>
+            <div class="space-y-1.5">
+              <button id="ctrl-rbc-filter" onclick="toggleCustomRule('rbc', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">여과 (X)</button>
+              <button id="ctrl-rbc-reabsorb" onclick="toggleCustomRule('rbc', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
+              <button id="ctrl-rbc-secrete" onclick="toggleCustomRule('rbc', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-prot scale-90"></span>단백질</div>
+            <div class="space-y-1.5">
+              <button id="ctrl-prot-filter" onclick="toggleCustomRule('prot', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">여과 (X)</button>
+              <button id="ctrl-prot-reabsorb" onclick="toggleCustomRule('prot', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
+              <button id="ctrl-prot-secrete" onclick="toggleCustomRule('prot', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-gluc scale-90"></span>포도당</div>
+            <div class="space-y-1.5">
+              <button id="ctrl-gluc-filter" onclick="toggleCustomRule('gluc', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
+              <button id="ctrl-gluc-reabsorb" onclick="toggleCustomRule('gluc', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">재흡수 (O)</button>
+              <button id="ctrl-gluc-secrete" onclick="toggleCustomRule('gluc', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-urea scale-90"></span>요소</div>
+            <div class="space-y-1.5">
+              <button id="ctrl-urea-filter" onclick="toggleCustomRule('urea', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
+              <button id="ctrl-urea-reabsorb" onclick="toggleCustomRule('urea', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">재흡수 (X)</button>
+              <button id="ctrl-urea-secrete" onclick="toggleCustomRule('urea', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">분비 (O)</button>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-1.5 mb-2 font-bold text-slate-700 text-[15px]"><span class="p-water text-[12px]">💧</span>물</div>
+            <div class="space-y-1.5">
+              <button id="ctrl-water-filter" onclick="toggleCustomRule('water', 'filter')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">여과 (O)</button>
+              <button id="ctrl-water-reabsorb" onclick="toggleCustomRule('water', 'reabsorb')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm">재흡수 (O)</button>
+              <button id="ctrl-water-secrete" onclick="toggleCustomRule('water', 'secrete')" class="w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500">분비 (X)</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-5 flex justify-center">
+          <button onclick="resetCustomRules()" class="px-6 py-2 bg-slate-700 text-white font-bold rounded-lg shadow hover:bg-slate-800 transition-colors flex items-center gap-2"><span>🔄</span> 정상 상태로 초기화</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="completion-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-500">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center transform scale-90 transition-transform duration-500" id="completion-modal-content">
+      <div class="text-6xl mb-4 animate-bounce">🏆</div>
+      <h3 class="text-2xl font-black text-slate-800 mb-2">모든 진단 완료!</h3>
+      <p class="text-slate-600 mb-6 font-medium leading-relaxed">3명의 환자를 모두 완벽하게 치료했습니다.<br>훌륭한 꼬마 전문의 선생님이시네요!</p>
+      <button onclick="closeModal()" class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition-all">확인</button>
+    </div>
+  </div>
+
+  <div id="password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center transform scale-90 transition-transform duration-300" id="password-modal-content">
+      <div class="text-5xl mb-4">🔒</div>
+      <h3 class="text-xl font-black text-slate-800 mb-2">최종 진단 채점 잠금</h3>
+      <p class="text-slate-600 mb-6 font-medium text-[15px]">모둠원과 함께 학습지 작성을 완료했다면,<br>선생님이 알려주시는 암호를 입력하세요.</p>
+      <input type="password" id="clinic-password" onkeypress="if(event.key==='Enter') checkPassword()" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 mb-4 text-center text-xl tracking-widest focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all" placeholder="비밀번호">
+      <div class="flex gap-3">
+        <button onclick="closePasswordModal()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all">취소</button>
+        <button onclick="checkPassword()" class="w-1/2 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md transition-all">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-50 bg-slate-900/90 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <span id="toast-icon" class="text-lg">💡</span><span id="toast-msg" class="text-sm font-medium">메시지</span>
+  </div>
+
+  <script>
+    function showToast(msg, icon = '💡') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      document.getElementById('toast-icon').innerText = icon;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      if(window.toastTimer) clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
+    }
+
+    const CLINIC_PASSWORD = "1234"; 
+    let isGradingUnlocked = false; 
+
+    function showPasswordModal() {
+      const modal = document.getElementById('password-modal');
+      const content = document.getElementById('password-modal-content');
+      document.getElementById('clinic-password').value = '';
+      modal.classList.remove('hidden');
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-90');
+      setTimeout(() => document.getElementById('clinic-password').focus(), 100);
+    }
+
+    function closePasswordModal() {
+      const modal = document.getElementById('password-modal');
+      const content = document.getElementById('password-modal-content');
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-90');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function checkPassword() {
+      const input = document.getElementById('clinic-password').value;
+      if (input === CLINIC_PASSWORD) {
+        isGradingUnlocked = true;
+        closePasswordModal();
+        showToast('암호 해제 성공! 전체 환자의 채점을 시작합니다.', '🔓');
+        setTimeout(() => gradeAll(), 300);
+      } else {
+        showToast('비밀번호가 일치하지 않습니다.', '❌');
+      }
+    }
+
+    let currentTab = 'tab2'; 
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      ['tab2', 'tab3', 'tab4'].forEach(id => {
+        const pane = document.getElementById(`${id}-content`);
+        const btn = document.getElementById(`tab-btn-${id.slice(3)}`);
+        if (id === tabId) {
+          pane.classList.remove('hidden'); pane.classList.add('block');
+          btn.className = "tab-btn flex-shrink-0 flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-base sm:text-lg font-bold transition-all bg-teal-600 text-white shadow-md shadow-teal-200";
+        } else {
+          pane.classList.remove('block'); pane.classList.add('hidden');
+          btn.className = "tab-btn flex-shrink-0 flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-base sm:text-lg font-semibold transition-all text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 opacity-80 hover:opacity-100";
+        }
+      });
+      
+      if (tabId === 'tab2' || tabId === 'tab4') {
+        if (!simCtx || !simCtx4) initSim(); 
+        particles = []; 
+        // 뭉쳐서 나오지 않고 화면 밖에서부터 순차적으로 등장하도록 tOffset 적용
+        for(let i=0; i<40; i++) spawnParticle(-(i * 0.4) - Math.random() * 0.2);
+        if(!simLoopId) renderSim();
+      }
+      if (tabId === 'tab3') initUrinaryLab();
+      if (tabId === 'tab4') updateControllerUI();
+    }
+
+    /* --- Simulation Setup --- */
+    let simCanvas, simCtx, simCanvas4, simCtx4, simLoopId, isPlaying = true, simSpeed = 1.0, showLabel = true, currentFlt = 'all', particles = [];
+
+    const defaultRules = {
+      rbc: { filter: false, reabsorb: false, secrete: false },
+      prot: { filter: false, reabsorb: false, secrete: false },
+      gluc: { filter: true, reabsorb: true, secrete: false },
+      urea: { filter: true, reabsorb: false, secrete: true },
+      water: { filter: true, reabsorb: true, secrete: false }
+    };
+    
+    let customRules = JSON.parse(JSON.stringify(defaultRules));
+
+    function initSim() {
+      simCanvas = document.getElementById('simCanvas'); 
+      if(simCanvas) { simCanvas.width = 1000; simCanvas.height = 480; simCtx = simCanvas.getContext('2d'); }
+      simCanvas4 = document.getElementById('simCanvas4'); 
+      if(simCanvas4) { simCanvas4.width = 1000; simCanvas4.height = 480; simCtx4 = simCanvas4.getContext('2d'); }
+      
+      if (particles.length === 0) { 
+          for(let i=0; i<40; i++) spawnParticle(-(i * 0.4) - Math.random() * 0.2); 
+      }
+      if(!simLoopId) renderSim();
+    }
+
+    function toggleCustomRule(substance, process) {
+      customRules[substance][process] = !customRules[substance][process];
+      updateControllerUI();
+    }
+
+    function resetCustomRules() {
+      customRules = JSON.parse(JSON.stringify(defaultRules));
+      updateControllerUI();
+      particles = [];
+      for(let i=0; i<40; i++) spawnParticle(-(i * 0.4) - Math.random() * 0.2);
+    }
+
+    function updateControllerUI() {
+      ['rbc', 'prot', 'gluc', 'urea', 'water'].forEach(sub => {
+        ['filter', 'reabsorb', 'secrete'].forEach(proc => {
+          let btn = document.getElementById(`ctrl-${sub}-${proc}`);
+          if(btn) {
+            let isOn = customRules[sub][proc];
+            let isChanged = (isOn !== defaultRules[sub][proc]); 
+            let labelText = proc === 'filter' ? '여과' : (proc === 'reabsorb' ? '재흡수' : '분비');
+            btn.innerText = `${labelText} (${isOn ? 'O' : 'X'})`;
+            
+            if(isChanged) {
+              btn.className = "w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-rose-500 text-white shadow-md border-2 border-rose-600 animate-pulse";
+            } else if(isOn) {
+              btn.className = "w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-teal-500 text-white shadow-sm border-2 border-transparent";
+            } else {
+              btn.className = "w-full py-1.5 rounded-lg font-bold text-sm transition-colors bg-slate-200 text-slate-500 border-2 border-transparent";
+            }
+          }
+        });
+      });
+    }
+
+    function togglePlay() { 
+        isPlaying = !isPlaying; 
+        document.getElementById('play-icon').innerText = isPlaying ? '⏸️' : '▶️'; 
+        document.getElementById('play-text').innerText = isPlaying ? '일시정지' : '재생하기'; 
+    }
+    
+    function updateSpeed(v) { 
+        simSpeed = parseFloat(v); 
+        document.getElementById('speed-val').innerText = `${simSpeed.toFixed(1)}x`; 
+    }
+    
+    function toggleLabels() { 
+        showLabel = !showLabel; 
+        document.getElementById('label-icon').innerText = showLabel ? '🏷️' : '🙈'; 
+    }
+    
+    function setFilter(f) { 
+        currentFlt = f; 
+        ['all', 'rbc', 'glu', 'urea', 'water'].forEach(k => { 
+            const b = document.getElementById(`flt-${k}`); 
+            if(k===f) { b.classList.add('bg-slate-800', 'text-white'); b.classList.remove('bg-white', 'text-slate-600'); } 
+            else { b.classList.remove('bg-slate-800', 'text-white'); b.classList.add('bg-white', 'text-slate-600'); } 
+        }); 
+    }
+
+    function spawnParticle(startT = 0) {
+      const keys = ['rbc', 'prot', 'gluc', 'urea', 'water'];
+      let k = keys[Math.floor(Math.random() * keys.length)];
+      if(currentFlt === 'rbc') k = Math.random() > 0.5 ? 'rbc' : 'prot';
+      if(currentFlt === 'glu') k = 'gluc';
+      if(currentFlt === 'urea') k = 'urea';
+      if(currentFlt === 'water') k = 'water';
+
+      let laneT = (Math.random() - 0.5) * 20;
+      let p = {
+        type: k, t: startT, baseSpeed: 1.5 + Math.random()*0.8, route: 'artery',
+        laneT: laneT, reabsorbed: false, secreted: false,
+        sX: 0, sY: 0, done: false
+      };
+      particles.push(p);
+    }
+
+    /* --- Drawing Functions (Anatomy & Particles) --- */
+    function drawPolygonArrow(ctx, fx, fy, tx, ty, color) {
+      const a = Math.atan2(ty-fy, tx-fx);
+      const len = Math.hypot(tx-fx, ty-fy);
+      const headW = 16, headL = 16, shaftW = 8;
+      ctx.save(); ctx.translate(fx, fy); ctx.rotate(a);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(0, -shaftW/2); ctx.lineTo(len - headL, -shaftW/2);
+      ctx.lineTo(len - headL, -headW/2); ctx.lineTo(len, 0);
+      ctx.lineTo(len - headL, headW/2); ctx.lineTo(len - headL, shaftW/2);
+      ctx.lineTo(0, shaftW/2); ctx.closePath();
+      ctx.shadowColor = 'rgba(0,0,0,0.2)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2;
+      ctx.fill(); ctx.restore();
+    }
+
+    function drawPillText(ctx, text, x, y, color) {
+      ctx.font = '900 23px "Noto Sans KR"'; 
+      const m = ctx.measureText(text); const w = m.width + 36, h = 46;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.shadowColor = 'rgba(0,0,0,0.15)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2;
+      ctx.beginPath(); ctx.roundRect(x - w/2, y - h/2, w, h, h/2); ctx.fill();
+      ctx.shadowColor = 'transparent'; ctx.fillStyle = color;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(text, x, y+2);
+    }
+
+    function drawAnatomy(ctx, isClinic) {
+      const capGrad = ctx.createLinearGradient(260, 210, 780, 450);
+      capGrad.addColorStop(0, 'rgba(241, 245, 249, 0.5)'); 
+      capGrad.addColorStop(1, 'rgba(241, 245, 249, 0)'); 
+      ctx.fillStyle = capGrad; 
+      ctx.beginPath(); 
+      ctx.roundRect(260, 210, 520, 240, 20); 
+      ctx.fill();
+
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.lineWidth = 46; ctx.strokeStyle = '#0d9488'; 
+      ctx.beginPath(); 
+      ctx.moveTo(105, 95); 
+      ctx.bezierCurveTo(105, 160, 130, 175, 150, 175); 
+      ctx.bezierCurveTo(170, 175, 195, 160, 195, 95); 
+      ctx.stroke();
+      ctx.lineCap = 'butt'; 
+      ctx.beginPath(); ctx.moveTo(150, 175); ctx.lineTo(150, 290); ctx.arcTo(150, 330, 190, 330, 40); ctx.lineTo(920, 330); ctx.stroke();
+      
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 40; ctx.strokeStyle = '#ccfbf1';
+      ctx.beginPath(); 
+      ctx.moveTo(105, 95); 
+      ctx.bezierCurveTo(105, 160, 130, 175, 150, 175); 
+      ctx.bezierCurveTo(170, 175, 195, 160, 195, 95); 
+      ctx.stroke();
+      ctx.lineCap = 'butt'; 
+      ctx.beginPath(); ctx.moveTo(150, 175); ctx.lineTo(150, 290); ctx.arcTo(150, 330, 190, 330, 40); ctx.lineTo(920, 330); ctx.stroke();
+
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.lineWidth = 36; ctx.strokeStyle = '#e11d48'; 
+      ctx.beginPath(); 
+      ctx.moveTo(40, 80); 
+      ctx.lineTo(100, 80); 
+      ctx.bezierCurveTo(125, 80, 130, 90, 130, 110);
+      ctx.moveTo(170, 110);
+      ctx.bezierCurveTo(170, 90, 175, 80, 200, 80); 
+      ctx.lineTo(280, 80); 
+      ctx.lineTo(280, 260); 
+      ctx.lineTo(735, 260); 
+      ctx.lineTo(735, 450); 
+      ctx.stroke();
+
+      ctx.lineWidth = 30; ctx.strokeStyle = '#ffe4e6'; 
+      ctx.beginPath(); 
+      ctx.moveTo(40, 80); 
+      ctx.lineTo(100, 80);
+      ctx.bezierCurveTo(125, 80, 130, 90, 130, 110);
+      ctx.moveTo(170, 110);
+      ctx.bezierCurveTo(170, 90, 175, 80, 200, 80);
+      ctx.lineTo(280, 80); 
+      ctx.lineTo(280, 260); 
+      ctx.lineTo(735, 260); 
+      ctx.lineTo(735, 450); 
+      ctx.stroke();
+
+      ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(130, 110); ctx.bezierCurveTo(100, 115, 110, 155, 140, 150); ctx.lineTo(150, 125);
+      ctx.moveTo(170, 110); ctx.bezierCurveTo(200, 115, 190, 155, 160, 150); ctx.lineTo(150, 125);
+      ctx.moveTo(135, 115); ctx.bezierCurveTo(120, 170, 150, 170, 150, 130);
+      ctx.moveTo(165, 115); ctx.bezierCurveTo(180, 170, 150, 170, 150, 130);
+      ctx.moveTo(140, 120); ctx.bezierCurveTo(120, 145, 135, 160, 150, 135);
+      ctx.moveTo(160, 120); ctx.bezierCurveTo(180, 145, 165, 160, 150, 135);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#ffe4e6'; ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(130, 110); ctx.bezierCurveTo(100, 115, 110, 155, 140, 150); ctx.lineTo(150, 125);
+      ctx.moveTo(170, 110); ctx.bezierCurveTo(200, 115, 190, 155, 160, 150); ctx.lineTo(150, 125);
+      ctx.moveTo(135, 115); ctx.bezierCurveTo(120, 170, 150, 170, 150, 130);
+      ctx.moveTo(165, 115); ctx.bezierCurveTo(180, 170, 150, 170, 150, 130);
+      ctx.moveTo(140, 120); ctx.bezierCurveTo(120, 145, 135, 160, 150, 135);
+      ctx.moveTo(160, 120); ctx.bezierCurveTo(180, 145, 165, 160, 150, 135);
+      ctx.stroke();
+
+      if(!isClinic) {
+        ctx.font = '700 22px "Noto Sans KR"';
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+
+        ctx.textAlign = 'right';
+        ctx.fillText('토리', 65, 40);
+        ctx.beginPath(); ctx.moveTo(72, 40); ctx.lineTo(115, 115); ctx.stroke();
+
+        ctx.textAlign = 'right';
+        ctx.fillText('보먼주머니', 120, 250); 
+        ctx.beginPath(); ctx.moveTo(100, 230); ctx.lineTo(155, 175); ctx.stroke(); 
+
+        ctx.textAlign = 'left';
+        ctx.fillText('모세혈관', 650, 130);
+        ctx.beginPath(); ctx.moveTo(685, 150); ctx.lineTo(685, 245); ctx.stroke();
+
+        ctx.textAlign = 'center';
+        ctx.fillText('세뇨관', 310, 405);
+        ctx.beginPath(); ctx.moveTo(310, 385); ctx.lineTo(310, 353); ctx.stroke();
+
+        ctx.fillStyle = '#ea580c';
+        ctx.beginPath(); 
+        ctx.moveTo(880, 325); ctx.lineTo(920, 325); 
+        ctx.lineTo(920, 312); 
+        ctx.lineTo(955, 330); 
+        ctx.lineTo(920, 348); 
+        ctx.lineTo(920, 335); 
+        ctx.lineTo(880, 335); 
+        ctx.closePath(); 
+        ctx.fill();
+
+        ctx.font = '900 19px "Noto Sans KR"';
+        ctx.fillStyle = '#ea580c';
+        ctx.textAlign = 'center';
+        ctx.fillText('최종 오줌', 915, 295);
+      }
+      
+      if(showLabel && !isClinic) {
+        drawPolygonArrow(ctx, 100, 160, 100, 205, '#f59e0b'); 
+        drawPillText(ctx, '여과', 100, 140, '#d97706');
+
+        drawPolygonArrow(ctx, 420, 310, 420, 260, '#f59e0b'); 
+        drawPillText(ctx, '재흡수', 420, 325, '#d97706');
+
+        drawPolygonArrow(ctx, 580, 280, 580, 330, '#f59e0b');
+        drawPillText(ctx, '분비', 580, 265, '#d97706');
+      }
+    }
+
+    function updateParticles(ctx, isTab4) {
+      if(particles.length < 25 && Math.random() < 0.07) spawnParticle(0);
+      
+      for(let i = particles.length-1; i>=0; i--) {
+        let p = particles[i];
+        let px = 0, py = 0;
+        let v = p.baseSpeed * simSpeed;
+        
+        if(!isPlaying) v = 0;
+        if(isTab4) v *= 0.85; // 3번 탭에서만 속도를 아주 조금 더 느리게 조절
+
+        let rules = isTab4 ? customRules[p.type] : defaultRules[p.type];
+
+        if(p.route === 'artery') {
+          let L = 60; p.t += v / L;
+          px = 40 + p.t * L; py = 80 + p.laneT;
+          if(p.t >= 1) { p.t = 0; p.route = 'artery_curve'; }
+        }
+        else if(p.route === 'artery_curve') {
+          let L = 55; p.t += v / L;
+          px = 100 + p.t * 30; py = 80 + p.t * 30 + p.laneT; 
+          if(p.t >= 1) {
+            p.t = 0;
+            let willFilter = rules.filter;
+            if (willFilter) {
+                if (p.type === 'urea') willFilter = Math.random() < 0.7;
+                /* 물은 토리에서 모두 여과되도록 이전의 잘못된 확률 코드를 제거했습니다. 
+                   (이후 세뇨관에서 85%는 재흡수되고 나머지는 오줌으로 배출됩니다.) */
+            }
+            p.route = willFilter ? 'tubule_v' : 'efferent_curve';
+          }
+        }
+        else if(p.route === 'efferent_curve') {
+          let L = 55; p.t += v / L;
+          px = 170 + p.t * 30; py = 110 - p.t * 30 + p.laneT;
+          if(p.t >= 1) { p.t = 0; p.route = 'efferent_h'; }
+        }
+        else if(p.route === 'efferent_h') {
+          let L = 80; p.t += v / L;
+          px = 200 + p.t * L; py = 80 + p.laneT;
+          if(p.t >= 1) { p.t = 0; p.route = 'efferent_v'; }
+        }
+        else if(p.route === 'efferent_v') {
+          let L = 180; p.t += v / L;
+          px = 280 + p.laneT; py = 80 + p.t * L;
+          if(p.t >= 1) { p.t = 0; p.route = 'cap_main'; }
+        }
+        else if(p.route === 'tubule_v') {
+          let L = 175; p.t += v / L;
+          px = 150 + p.laneT; py = 115 + p.t * L;
+          if(p.t >= 1) { p.t = 0; p.route = 'tubule_c'; }
+        }
+        else if(p.route === 'tubule_c') {
+          let L = 63; p.t += v / L;
+          let angle = Math.PI - p.t * (Math.PI/2); 
+          let r = 40 - p.laneT;
+          px = 190 + r * Math.cos(angle); py = 290 + r * Math.sin(angle);
+          if(p.t >= 1) { p.t = 0; p.route = 'tubule_h'; }
+        }
+        else if(p.route === 'tubule_h') {
+          let L = 760; p.t += v / L;
+          px = 190 + p.t * L; py = 330 + p.laneT;
+
+          if(!p.reabsorbed && p.t > 0.3 && p.t < 0.35) { 
+            let doReab = rules.reabsorb;
+            
+            // 재흡수(O) 상태일 때: 물방울이 오줌으로 직진하는 빈도를 살짝 높임 (약 75% 재흡수, 25% 오줌으로)
+            if(doReab && p.type === 'water') {
+                doReab = Math.random() < 0.75; 
+            }
+            
+            if(doReab) { 
+               p.reabsorbed = true; p.route = 'reab_up'; 
+               p.t = 0; p.sX = px; p.sY = py; 
+            } else {
+               // 오류 수정: 재흡수되지 않기로 결정되면, 다음 프레임에서 또 계산하지 않도록 'skipped' 처리
+               p.reabsorbed = 'skipped';
+            }
+          }
+          if(p.t >= 1) p.done = true;
+        }
+        else if(p.route === 'cap_main') {
+          let L = 455; p.t += v / L;
+          px = 280 + p.t * L; py = 260 + p.laneT;
+
+          if(!p.secreted && p.t > 0.65 && p.t < 0.70) {
+            let doSec = rules.secrete;
+            if (doSec && p.type === 'urea') doSec = Math.random() < 0.95;
+            if (doSec) {
+                p.secreted = true; p.route = 'sec_down';
+                p.t = 0; p.sX = px; p.sY = py; 
+            } else {
+                // 오류 수정: 분비되지 않기로 결정되면, 다음 프레임에서 또 계산하지 않도록 'skipped' 처리
+                p.secreted = 'skipped';
+            }
+          }
+          if(p.t >= 1) { p.t = 0; p.route = 'vein_down'; }
+        }
+        else if(p.route === 'reab_up') {
+          let L = 70; p.t += v / L;
+          px = p.sX; py = p.sY - p.t * L; 
+          if(p.t >= 1) { 
+             p.route = 'cap_main'; 
+             p.t = (px - 280) / 455; 
+          }
+        }
+        else if(p.route === 'sec_down') {
+          let L = 70; p.t += v / L;
+          px = p.sX; py = p.sY + p.t * L; 
+          if(p.t >= 1) { 
+             p.route = 'tubule_h'; 
+             p.t = (px - 190) / 760; 
+          }
+        }
+        else if(p.route === 'vein_down') {
+          let L = 190; p.t += v / L;
+          px = 735 + p.laneT; py = 260 + p.t * L; 
+          if(p.t >= 1) p.done = true;
+        }
+
+        let match = (currentFlt === 'all') || 
+                    (currentFlt === 'rbc' && (p.type==='rbc'||p.type==='prot')) || 
+                    (currentFlt === 'glu' && p.type==='gluc') || 
+                    (currentFlt === 'urea' && p.type==='urea') || 
+                    (currentFlt === 'water' && p.type==='water');
+        
+        ctx.globalAlpha = match ? 1.0 : 0.15;
+        // p.t가 음수일 때는 화면 왼쪽 바깥에서부터 천천히 진입하도록 처리됨
+        if(px > 0 && py > 0) drawP(ctx, p, px, py);
+        ctx.globalAlpha = 1.0;
+        
+        if(p.done || py > 480 || px > 980) particles.splice(i, 1);
+      }
+    }
+
+    function drawP(ctx, p, x, y) {
+      if(p.type === 'rbc') { 
+        ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI*2); ctx.fillStyle = '#fca5a5'; ctx.fill();
+        ctx.lineWidth = 2.5; ctx.strokeStyle = '#ef4444'; ctx.stroke();
+      } else if (p.type === 'prot') { 
+        ctx.fillStyle = '#15803d'; ctx.beginPath(); 
+        for(let i=0; i<5; i++) { const a = (i * 2 * Math.PI / 5) - Math.PI/2; const px = x + 11 * Math.cos(a), py = y + 11 * Math.sin(a); if(i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py); }
+        ctx.closePath(); ctx.fill();
+      } else if (p.type === 'gluc') { 
+        ctx.fillStyle = '#a855f7'; ctx.beginPath(); 
+        for(let i=0; i<6; i++) { const a = (i * 2 * Math.PI / 6); const px = x + 5.5 * Math.cos(a), py = y + 5.5 * Math.sin(a); if(i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py); }
+        ctx.closePath(); ctx.fill();
+      } else if (p.type === 'urea') { 
+        ctx.fillStyle = '#fde047'; ctx.strokeStyle = '#eab308'; ctx.lineWidth = 1.5;
+        ctx.fillRect(x-4, y-4, 8, 8); ctx.strokeRect(x-4, y-4, 8, 8);
+      } else if (p.type === 'water') { 
+        ctx.fillStyle = '#38bdf8'; ctx.beginPath(); 
+        ctx.moveTo(x, y - 7); ctx.bezierCurveTo(x+5, y-1, x+5, y+5, x, y+7); ctx.bezierCurveTo(x-5, y+5, x-5, y-1, x, y-7);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+
+    function renderSim() {
+      if (currentTab === 'tab2' && simCtx) {
+        simCtx.clearRect(0,0, 1000, 480);
+        drawAnatomy(simCtx, false); 
+        updateParticles(simCtx, false); 
+      } 
+      else if (currentTab === 'tab4' && simCtx4) {
+        simCtx4.clearRect(0,0, 1000, 480);
+        drawAnatomy(simCtx4, false);
+        updateParticles(simCtx4, true); 
+      }
+      simLoopId = requestAnimationFrame(renderSim);
+    }
+
+    // --- 2번 탭 (소변검사지 활동 진료실) 로직 ---
+    let selectedUrinaryPatient = 1;
+    let patientRecords = {
+      1: { status: 'pending', answers: { sub: null, cause: null, trt: null } },
+      2: { status: 'pending', answers: { sub: null, cause: null, trt: null } },
+      3: { status: 'pending', answers: { sub: null, cause: null, trt: null } }
+    };
+
+    const URINARY_PATIENTS = {
+      1: {
+        name: "환자 A", label: "환자 A", urineColor: "bg-amber-100",
+        protPadColor: "bg-teal-500", glucPadColor: "bg-sky-300",
+        substance: "prot",
+        realFindings: "정답입니다! <b>단백질 패드가 청록색(+++)</b>으로 변했습니다. 오줌에 단백질이 섞여 나오고 있습니다.",
+        realCause: "콩팥의 <b>[토리]</b>에 문제가 생겨, 원래는 여과되지 않아야 할 크기가 큰 <b>[단백질]</b>이 보먼주머니로 <b>[여과]</b>된 것으로 판단됩니다.",
+        causeQuiz: {
+          text: "콩팥의 <b>[ ? ]</b>에 문제가 생겨, 원래는 빠져나가지 않아야 할 크기가 큰 단백질이 보먼주머니로 <b>[ ? ]</b>된 것으로 판단됩니다.",
+          options: [ { t: "토리, 여과", v: 1 }, { t: "세뇨관, 재흡수", v: 0 }, { t: "모세혈관, 분비", v: 0 } ]
+        },
+        options: [
+          { t: "토리가 정상적인 여과 기능을 할 수 있도록 약물 치료를 받고 안정을 취한다.", v: 1 },
+          { t: "세뇨관에서 포도당이 모두 재흡수될 수 있도록 단 음식을 멀리한다.", v: 0 },
+          { t: "독성이 약한 요소가 배설되지 않도록 물을 적게 마신다.", v: 0 }
+        ]
+      },
+      2: {
+        name: "환자 B", label: "환자 B", urineColor: "bg-amber-200",
+        protPadColor: "bg-yellow-200", glucPadColor: "bg-amber-600",
+        substance: "gluc",
+        realFindings: "정답입니다! <b>포도당 패드가 갈색(++)</b>으로 변했습니다. 오줌에 포도당이 섞여 나오고 있습니다.",
+        realCause: "여과된 포도당은 <b>[세뇨관]</b>에서 모세혈관으로 모두 <b>[재흡수]</b>되어야 하는데, 혈액 내 포도당이 너무 많아 다 재흡수되지 못하고 남은 것으로 판단됩니다.",
+        causeQuiz: {
+          text: "여과된 포도당은 <b>[ ? ]</b>에서 모세혈관으로 모두 <b>[ ? ]</b>되어야 하는데, 혈액 내 포도당이 너무 많아 다 이동하지 못하고 남은 것으로 판단됩니다.",
+          options: [ { t: "보먼주머니, 여과", v: 0 }, { t: "세뇨관, 재흡수", v: 1 }, { t: "콩팥깔때기, 분비", v: 0 } ]
+        },
+        options: [
+          { t: "크기가 큰 물질이 여과되지 않도록 토리를 치료하는 약을 먹는다.", v: 0 },
+          { t: "혈액 속 포도당 농도를 조절하여 세뇨관에서 모두 재흡수될 수 있게 한다.", v: 1 },
+          { t: "오줌관을 좁게 만들어 오줌이 방광으로 이동하는 속도를 늦춘다.", v: 0 }
+        ]
+      },
+      3: {
+        name: "환자 C", label: "환자 C", urineColor: "bg-amber-100",
+        protPadColor: "bg-yellow-200", glucPadColor: "bg-sky-300",
+        substance: "none",
+        realFindings: "정답입니다! <b>두 패드 모두 색깔이 변하지 않았습니다.</b> 음성 반응으로 정상입니다.",
+        realCause: "콩팥에서 <b>[여과, 재흡수, 분비]</b> 과정이 정상적으로 일어나 단백질과 포도당이 오줌에 포함되지 않은 것으로 판단됩니다.",
+        causeQuiz: {
+          text: "콩팥에서 <b>[ ? ]</b> 과정이 정상적으로 일어나 단백질과 포도당이 오줌에 포함되지 않은 것으로 판단됩니다.",
+          options: [ { t: "소화와 흡수", v: 0 }, { t: "여과, 재흡수, 분비", v: 1 }, { t: "혈액 순환", v: 0 } ]
+        },
+        options: [
+          { t: "배설계가 건강하므로, 노폐물이 잘 배출되도록 적절한 수분 섭취를 유지한다.", v: 1 },
+          { t: "토리에서 단백질이 여과되도록 격렬한 운동을 매일 한다.", v: 0 },
+          { t: "포도당이 세뇨관에 남아있도록 인위적으로 요소 배출을 늘린다.", v: 0 }
+        ]
+      }
+    };
+
+    function initUrinaryLab() { selectUrinaryPt(1); }
+
+    function selectUrinaryPt(id) {
+      selectedUrinaryPatient = id;
+      [1, 2, 3].forEach(i => {
+        const card = document.getElementById(`ur-pt-${i}`);
+        if(i === id) card.className = "relative cursor-pointer p-3 rounded-xl border-2 border-teal-500 bg-teal-50 transition-all text-center overflow-hidden";
+        else card.className = "relative cursor-pointer p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-300 transition-all text-center overflow-hidden";
+      });
+
+      const pt = URINARY_PATIENTS[id];
+      document.getElementById('urine-liquid').className = `w-full h-20 ${pt.urineColor} transition-all duration-500 flex items-center justify-center pointer-events-none`;
+      document.getElementById('urine-label').innerText = pt.label;
+      renderDiagnosticReport(); 
+    }
+
+    function renderDiagnosticReport() {
+      const pt = URINARY_PATIENTS[selectedUrinaryPatient];
+      const rec = patientRecords[selectedUrinaryPatient];
+      document.getElementById('rep-pt-name').innerText = `${pt.name} 검사 보고서`;
+
+      const contentArea = document.getElementById('report-content-area');
+      const actionArea = document.getElementById('report-action-area');
+      const statusBadge = document.getElementById('rep-status-badge');
+
+      if (rec.status === 'pending') {
+        document.getElementById('pad-glucose').className = "w-6 h-5 bg-sky-300 border border-slate-200 transition-colors duration-500";
+        document.getElementById('pad-protein').className = "w-6 h-5 bg-yellow-200 border border-slate-200 transition-colors duration-500";
+        document.getElementById('lab-result-desc').innerHTML = `👆 검사지를 드래그하여 소변 컵에 담그거나, 아래 버튼을 눌러주세요.`;
+        statusBadge.innerText = "검사 대기중";
+        statusBadge.className = "px-3 py-1 bg-amber-100 text-amber-700 font-bold text-[15px] rounded-lg transition-colors";
+        contentArea.innerHTML = `
+          <div class="p-5 text-center text-slate-500 mt-10">
+            <div class="text-4xl mb-3">🧪</div>
+            왼쪽 실험실에서 소변검사지를 컵에 넣어<br>검사를 먼저 진행해주세요.
+          </div>
+        `;
+        actionArea.innerHTML = ``;
+        return;
+      }
+
+      document.getElementById('pad-glucose').className = `w-6 h-5 border border-slate-200 transition-colors duration-500 ${pt.glucPadColor}`;
+      document.getElementById('pad-protein').className = `w-6 h-5 border border-slate-200 transition-colors duration-500 ${pt.protPadColor}`;
+      document.getElementById('lab-result-desc').innerHTML = `✨ <strong>검사 완료!</strong> 대조표와 비교해 보세요.`;
+
+      if (rec.status === 'correct') {
+        statusBadge.innerText = "진단 및 처방 완료";
+        statusBadge.className = "px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-[15px] rounded-lg transition-colors";
+        contentArea.innerHTML = `
+          <div class="space-y-4">
+            <div class="p-4 rounded-xl bg-teal-50 border border-teal-200 text-sm text-teal-900 leading-relaxed shadow-sm">
+              ${pt.realFindings}
+            </div>
+            <div class="p-4 rounded-xl bg-teal-50 border border-teal-200 text-sm text-teal-900 leading-relaxed shadow-sm">
+              ✨ <strong>정확한 원인 분석:</strong><br>${pt.realCause}
+            </div>
+            <div class="p-4 rounded-xl bg-teal-50 border border-teal-200 text-sm text-teal-900 leading-relaxed shadow-sm">
+              💊 <strong>전문의 처방:</strong><br>${pt.options.find(o => o.v === 1).t}
+            </div>
+          </div>
+        `;
+        actionArea.innerHTML = `
+          <div class="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-300 text-emerald-800 text-lg font-bold flex items-center justify-center gap-2 shadow-inner mt-4">
+            <span>🎉</span> 완벽한 진단입니다!
+          </div>
+        `;
+        return;
+      }
+
+      if (rec.status === 'incorrect') {
+        statusBadge.innerText = "오진 (재진단 요망)";
+        statusBadge.className = "px-3 py-1 bg-rose-100 text-rose-800 font-bold text-[15px] rounded-lg transition-colors";
+      } else if (rec.status === 'saved') {
+        statusBadge.innerText = "임시 저장됨";
+        statusBadge.className = "px-3 py-1 bg-slate-100 text-slate-700 font-bold text-[15px] rounded-lg transition-colors";
+      } else {
+        statusBadge.innerText = "진단 진행 중";
+        statusBadge.className = "px-3 py-1 bg-indigo-100 text-indigo-800 font-bold text-[15px] rounded-lg transition-colors";
+      }
+
+      const ans = rec.answers;
+      contentArea.innerHTML = `
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 shadow-sm">
+            <div class="text-indigo-800 font-bold mb-3 flex items-center gap-1"><span>👀</span> 1단계: 어떤 성분이 검출되었나요?</div>
+            <div class="space-y-2">
+              <label class="flex items-center space-x-3 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-white bg-slate-50 transition-colors">
+                <input type="radio" name="ur-substance" value="prot" class="text-teal-600 w-4 h-4" ${ans.sub === 'prot' ? 'checked' : ''}> <span class="text-slate-700 font-medium text-[14px]">단백질 검출</span>
+              </label>
+              <label class="flex items-center space-x-3 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-white bg-slate-50 transition-colors">
+                <input type="radio" name="ur-substance" value="gluc" class="text-teal-600 w-4 h-4" ${ans.sub === 'gluc' ? 'checked' : ''}> <span class="text-slate-700 font-medium text-[14px]">포도당 검출</span>
+              </label>
+              <label class="flex items-center space-x-3 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-white bg-slate-50 transition-colors">
+                <input type="radio" name="ur-substance" value="none" class="text-teal-600 w-4 h-4" ${ans.sub === 'none' ? 'checked' : ''}> <span class="text-slate-700 font-medium text-[14px]">아무것도 검출되지 않음 (정상)</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 shadow-sm">
+            <div class="text-indigo-800 font-bold mb-2 flex items-center gap-1"><span>🧠</span> 2단계: 질병 원인은? (빈칸 채우기)</div>
+            <div class="text-[14px] text-slate-700 bg-white p-3 rounded-lg border border-slate-200 mb-3 font-medium leading-relaxed">
+              ${pt.causeQuiz.text}
+            </div>
+            <div class="space-y-2">
+              ${pt.causeQuiz.options.map(o => `
+                <label class="flex items-center space-x-3 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-white bg-slate-50 transition-colors">
+                  <input type="radio" name="ur-cause" value="${o.v}" class="text-teal-600 w-4 h-4" ${ans.cause === String(o.v) ? 'checked' : ''}> 
+                  <span class="text-slate-700 font-medium text-[14px]">${o.t}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 shadow-sm">
+            <div class="text-indigo-800 font-bold mb-3 flex items-center gap-1"><span>💊</span> 3단계: 알맞은 처방 선택</div>
+            <div class="space-y-2">
+              ${pt.options.map(o => `
+                <label class="flex items-start space-x-3 p-2.5 border border-slate-200 rounded-lg cursor-pointer hover:bg-white bg-slate-50 transition-colors">
+                  <input type="radio" name="ur-trt" value="${o.v}" class="text-teal-600 w-4 h-4 shrink-0 mt-0.5" ${ans.trt === String(o.v) ? 'checked' : ''}> 
+                  <span class="text-slate-700 font-medium text-[14px] leading-snug">${o.t}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      const isAllPatientsSaved = [1, 2, 3].every(id => patientRecords[id].status !== 'pending' && patientRecords[id].status !== 'testing');
+      
+      if (isAllPatientsSaved) {
+        if (!isGradingUnlocked) {
+          actionArea.innerHTML = `
+            <button onclick="saveCurrentPatient()" class="w-full py-2.5 mt-4 mb-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-sm transition-all shadow-sm">
+              현재 환자 수정 후 저장
+            </button>
+            <button onclick="showPasswordModal()" class="w-full py-4 rounded-xl bg-gradient-to-r from-slate-700 to-slate-900 text-white font-black text-base shadow-lg hover:opacity-95 active:scale-95 transition-all flex justify-center items-center gap-2">
+              <span>🔒</span> 전체 환자 정답 확인 및 채점
+            </button>
+          `;
+        } else {
+          actionArea.innerHTML = `
+            <button onclick="saveCurrentPatientAndGrade()" class="w-full py-4 mt-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-black text-base shadow-lg hover:opacity-95 active:scale-95 transition-all animate-pulse">
+              수정된 답안 다시 채점하기
+            </button>
+          `;
+        }
+      } else {
+        actionArea.innerHTML = `
+          <button onclick="saveCurrentPatient()" class="w-full py-4 mt-4 rounded-xl bg-teal-600 text-white font-black text-base shadow-md hover:bg-teal-700 active:scale-95 transition-all">
+            ${rec.status === 'saved' ? '진단 기록 수정하기' : '이 환자의 진단 기록 임시 저장'}
+          </button>
+        `;
+      }
+    }
+
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+    function drop(ev) { ev.preventDefault(); dipTestStrip(); }
+
+    function dipTestStrip() {
+      if(patientRecords[selectedUrinaryPatient].status !== 'pending') return; 
+      patientRecords[selectedUrinaryPatient].status = 'testing';
+      showToast('반응 완료! 모둠원과 상의하여 1, 2, 3단계 답안을 기록하세요.', '🧪');
+      renderDiagnosticReport();
+    }
+
+    function saveCurrentPatient() {
+      const subEl = document.querySelector('input[name="ur-substance"]:checked');
+      const causeEl = document.querySelector('input[name="ur-cause"]:checked');
+      const trtEl = document.querySelector('input[name="ur-trt"]:checked');
+
+      if (!subEl || !causeEl || !trtEl) {
+         showToast('1단계, 2단계, 3단계의 답을 모두 선택해야 저장할 수 있습니다!', '⚠️');
+         return false; 
+      }
+
+      patientRecords[selectedUrinaryPatient].answers = {
+         sub: subEl.value, cause: causeEl.value, trt: trtEl.value
+      };
+      
+      if(patientRecords[selectedUrinaryPatient].status === 'testing' || patientRecords[selectedUrinaryPatient].status === 'incorrect') {
+         patientRecords[selectedUrinaryPatient].status = 'saved';
+      }
+      
+      showToast('진단 기록이 임시 저장되었습니다.', '💾');
+      updateBadges();
+      renderDiagnosticReport(); 
+      return true;
+    }
+
+    function saveCurrentPatientAndGrade() {
+      if(saveCurrentPatient()) gradeAll();
+    }
+
+    function gradeAll() {
+      let allCorrect = true;
+      [1, 2, 3].forEach(i => {
+        const rec = patientRecords[i];
+        const pt = URINARY_PATIENTS[i];
+        
+        if (rec.answers && rec.answers.sub) {
+          const isCorrect = (rec.answers.sub === pt.substance && rec.answers.cause === '1' && rec.answers.trt === '1');
+          if (isCorrect) rec.status = 'correct';
+          else { rec.status = 'incorrect'; allCorrect = false; }
+        } else {
+          allCorrect = false; 
+        }
+      });
+      
+      updateBadges();
+      renderDiagnosticReport();
+
+      if (allCorrect) setTimeout(showModal, 600);
+      else showToast('진단이 틀린 환자가 있습니다. 오진(빨간색) 뱃지를 확인하고 다시 토의해보세요!', '❌');
+    }
+
+    function updateBadges() {
+      let correctCount = 0;
+      [1, 2, 3].forEach(i => {
+        const badge = document.getElementById(`pt-badge-${i}`);
+        const stat = patientRecords[i].status;
+        
+        if (stat === 'pending' || stat === 'testing') {
+          badge.classList.add('hidden');
+        } else {
+          badge.classList.remove('hidden');
+          badge.classList.remove('bg-emerald-500', 'bg-slate-500', 'bg-rose-500');
+          
+          if (stat === 'saved') { badge.classList.add('bg-slate-500'); badge.innerText = '기록완료'; } 
+          else if (stat === 'correct') { badge.classList.add('bg-emerald-500'); badge.innerText = '진료완료'; correctCount++; } 
+          else if (stat === 'incorrect') { badge.classList.add('bg-rose-500'); badge.innerText = '재진단요망'; }
+        }
+      });
+      document.getElementById('clinic-score').innerText = correctCount;
+    }
+
+    function resetUrinaryLab() {
+      patientRecords = {
+        1: { status: 'pending', answers: { sub: null, cause: null, trt: null } },
+        2: { status: 'pending', answers: { sub: null, cause: null, trt: null } },
+        3: { status: 'pending', answers: { sub: null, cause: null, trt: null } }
+      };
+      isGradingUnlocked = false;
+      updateBadges();
+      selectUrinaryPt(1);
+      showToast('모의 진료실이 초기화되었습니다. 처음부터 다시 시작합니다.', '🔄');
+    }
+
+    function showExplanation(type) {
+      const textEl = document.getElementById('explanation-text');
+      const btns = ['여과', '재흡수', '분비'];
+      
+      const explanations = {
+        '여과': '<span class="text-amber-600 font-bold mr-2">[여과]</span> 크기가 작은 물질(물, 포도당, 요소 등)이 토리에서 보먼주머니로 빠져나가는 현상',
+        '재흡수': '<span class="text-amber-600 font-bold mr-2">[재흡수]</span> 여과액 중 몸에 필요한 물질(포도당, 물 등)이 세뇨관에서 모세혈관으로 다시 흡수되는 현상',
+        '분비': '<span class="text-amber-600 font-bold mr-2">[분비]</span> 미처 여과되지 못한 노폐물(요소 등)이 모세혈관에서 세뇨관으로 직접 이동하는 현상'
+      };
+
+      textEl.innerHTML = explanations[type];
+
+      btns.forEach(b => {
+        const btnEl = document.getElementById(`btn-exp-${b}`);
+        if(b === type) {
+          btnEl.className = "px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-amber-300 text-amber-700 transition-colors border border-amber-300 shadow-inner";
+        } else {
+          btnEl.className = "px-5 py-2 rounded-lg text-base sm:text-lg font-bold bg-white text-slate-600 hover:bg-amber-50 transition-colors border border-slate-200 shadow-sm";
+        }
+      });
+    }
+
+    switchTab('tab2'); 
+  </script>
+</body>
+</html>
