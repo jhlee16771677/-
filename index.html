@@ -621,7 +621,12 @@
             let isOn = customRules[sub][proc];
             let isChanged = (isOn !== defaultRules[sub][proc]); 
             let labelText = proc === 'filter' ? '여과' : (proc === 'reabsorb' ? '재흡수' : '분비');
-            btn.innerText = `${labelText} (${isOn ? 'O' : 'X'})`;
+            
+            let statusText = isOn ? 'O' : 'X';
+            if (sub === 'urea' && proc === 'reabsorb' && !isChanged) {
+              statusText = '일부';
+            }
+            btn.innerText = `${labelText} (${statusText})`;
             
             if(isChanged) {
               btn.className = "w-full py-1 rounded-lg font-bold text-sm transition-colors bg-rose-500 text-white shadow-md border-2 border-rose-600 animate-pulse";
@@ -895,6 +900,12 @@
           if(!p.reabsorbed && p.t > 0.3 && p.t < 0.35) { 
             let doReab = rules.reabsorb;
             if(doReab && p.type === 'water') doReab = Math.random() < 0.75; 
+            
+            // 추가된 부분: 요소(Urea)의 실제 생리학적 현상 반영 
+            // 기본 상태(재흡수X)라도 여과된 요소의 50%는 실제처럼 재흡수됨
+            if(p.type === 'urea' && rules.reabsorb === false) {
+                doReab = Math.random() < 0.5;
+            }
             
             if(doReab) { 
                p.reabsorbed = true; p.route = 'reab_up'; 
